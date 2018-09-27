@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<search>
+  <entry>
+    <title><![CDATA[Yii2 ajax 验证码]]></title>
+    <url>%2F2018%2F09%2F26%2FYii2-ajax-%E9%AA%8C%E8%AF%81%E7%A0%81%2F</url>
+    <content type="text"><![CDATA[有时候我们的业务需要用到 ajax 来验证验证码，官方配置太复杂，下面介绍一种简单的方法，配置简单，一看就懂。 一、控制器层12345678910111213141516171819202122232425262728293031323334353637383940414243444546474849505152535455565758596061/** * 验证码显示页面 **/public function actionIndex()&#123; return $this-&gt;render('index');&#125;/** * 验证码 ajax 验证方法 **/public function actionVerify()&#123; if (Yii::$app-&gt;getRequest()-&gt;isAjax)&#123; $data = Yii::$app-&gt;request-&gt;post(); if(!isset($data['verifyCode']))&#123; $this-&gt;renderJson(100,'验证码不能为空',null); return; &#125; $captcha_validate = new CaptchaAction('captcha', $this); if (isset($data['verifyCode']) &amp;&amp; !$captcha_validate-&gt;validate($data['verifyCode'], false))&#123; $this-&gt;renderJson(100,'验证码错误,请重新输入',null); &#125;else&#123; $this-&gt;renderJson(200,'验证成功',null); &#125; &#125;else&#123; $this-&gt;renderJson(100,'无效请求',null); &#125; return;&#125;public function actions()&#123; return [ 'captcha' =&gt; [ 'class' =&gt; 'yii\captcha\CaptchaAction', 'maxLength'=&gt;5, 'minLength'=&gt;5, 'padding'=&gt;5, 'height'=&gt;39, 'width'=&gt;100, 'offset'=&gt;5, ], ];&#125;public function renderJson($code,$msg,$data)&#123; $ret =array(); $ret['code'] =$code; $ret['msg'] =$msg; $ret['data'] =$data; $this-&gt;asJson($ret);&#125; 二、视图层123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657&lt;?php $this-&gt;title = "验证码显示页面";?&gt;&lt;label &gt;验证码&lt;sup&gt;*&lt;/sup&gt;&lt;/label&gt;&lt;input type="text" id="validatecode"/&gt;&lt;img src="" id="captcha-img" /&gt;&lt;span class="control-label" id="captcha"&gt;看不清？&lt;/span&gt;&lt;button onClick="validateVerifycode()"&gt;验证&lt;/button&gt;&lt;script&gt; $(function () &#123; //解决验证码不刷新的问题 changeVerifyCode(); $('#captcha').click(function () &#123; changeVerifyCode(); &#125;); &#125;); //更改或者重新加载验证码 function changeVerifyCode() &#123; $.ajax(&#123; url: "/admin/register/captcha?refresh", dataType: 'json', cache: false, success: function (data) &#123; //将验证码图片中的图片地址更换 $("#captcha-img").attr('src', data['url']); &#125; &#125;); &#125; function validateVerifycode()&#123; var validatecode = $('#validatecode').val(); if(!validatecode)&#123; alert('验证码必填'); return; &#125; $.ajax(&#123; url: "/xxx/xxx/verify", type:"POST", data:&#123;verifyCode:validatecode&#125;, dataType: 'json', cache: false, success: function (data) &#123; if(data.code==200)&#123; //验证码正确 &#125;else&#123; //验证码错误 &#125; //刷新验证码 changeVerifyCode(); &#125; &#125;); &#125;&lt;/script&gt; 三、效果展示]]></content>
+      <categories>
+        <category>Yii2</category>
+      </categories>
+      <tags>
+        <tag>验证码</tag>
+      </tags>
+  </entry>
+</search>
